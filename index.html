@@ -1,2 +1,52 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hello</title></head><body><h1>Hello from GitHub Pages</h1></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tic-Tac-Toe</title>
+<style>
+:root{--bg:#f2f5f7;--ink:#14202b;--cell:#fff;--line:#d5dde3;--x:#0b6b5f;--o:#b4531a;--win:#ffe9a8}
+@media(prefers-color-scheme:dark){:root{--bg:#0e161d;--ink:#e6edf2;--cell:#16212a;--line:#2b3a46;--x:#3ec3ae;--o:#ff9a5c;--win:#4a3d12}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif;padding:16px}
+main{width:min(92vw,380px);text-align:center}
+h1{margin:0 0 8px;font-size:1.6rem}
+#status{min-height:1.5em;margin:0 0 14px;font-weight:600}
+#board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cell{aspect-ratio:1;font-size:clamp(2.4rem,14vw,3.6rem);font-weight:700;background:var(--cell);border:1px solid var(--line);border-radius:10px;color:var(--ink);cursor:pointer}
+.cell:focus-visible,#reset:focus-visible{outline:3px solid var(--x);outline-offset:2px}
+.cell.x{color:var(--x)}.cell.o{color:var(--o)}.cell.win{background:var(--win)}
+.cell:disabled{cursor:default}
+#score{display:flex;justify-content:space-around;margin:16px 0}
+#reset{min-height:48px;padding:0 22px;font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--cell);color:var(--ink);cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<h1>Tic-Tac-Toe</h1>
+<p id="status" role="status"></p>
+<div id="board"></div>
+<div id="score"><span>X: <b id="sx">0</b></span><span>Draws: <b id="sd">0</b></span><span>O: <b id="so">0</b></span></div>
+<button id="reset" type="button">New game</button>
+</main>
+<script>
+var LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+var board,turn,over,score={X:0,O:0,D:0};
+var el=document.getElementById("board"),st=document.getElementById("status"),cells=[];
+for(var i=0;i<9;i++){(function(i){var b=document.createElement("button");b.className="cell";b.type="button";b.setAttribute("aria-label","Square "+(i+1));b.onclick=function(){play(i)};el.appendChild(b);cells.push(b)})(i)}
+function reset(){board=Array(9).fill("");turn="X";over=false;cells.forEach(function(c){c.textContent="";c.className="cell";c.disabled=false});st.textContent="X to play"}
+function play(i){
+  if(over||board[i])return;
+  board[i]=turn;cells[i].textContent=turn;cells[i].classList.add(turn.toLowerCase());
+  var w=LINES.filter(function(l){return l.every(function(k){return board[k]===turn})})[0];
+  if(w){over=true;w.forEach(function(k){cells[k].classList.add("win")});score[turn]++;st.textContent=turn+" wins!"}
+  else if(board.every(Boolean)){over=true;score.D++;st.textContent="It's a draw"}
+  else{turn=turn==="X"?"O":"X";st.textContent=turn+" to play"}
+  if(over)cells.forEach(function(c){c.disabled=true});
+  document.getElementById("sx").textContent=score.X;document.getElementById("so").textContent=score.O;document.getElementById("sd").textContent=score.D;
+}
+document.getElementById("reset").onclick=reset;
+reset();
+</script>
+</body>
+</html>
